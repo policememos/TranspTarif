@@ -28,14 +28,26 @@ def parce_tarifs_naming(arrs):
     for n in codes:
         n = n.upper()
         n = n.split('-')
-        dic = {
-            'z': n[0],
-            'fot': n[1],
-            'type': n[2],
-            'tonns': n[3].replace('Т','').replace('T',''),
-            'len': n[4].replace('M','').replace('М','')
-        }
-        dicts.append(dic)
+        if len(n) == 5:
+            dic = {
+                'z': n[0],
+                'fot': n[1],
+                'type': (n[2],),
+                'tonns': n[3].replace('Т','').replace('T',''),
+                'len': n[4].replace('M','').replace('М','')
+            }
+            dicts.append(dic)
+        if len(n) == 6:
+            dic = {
+                'z': n[0],
+                'fot': n[1],
+                'type': (n[2],n[3]),
+                'tonns': n[4].replace('Т','').replace('T',''),
+                'len': n[5].replace('M','').replace('М','')
+            }
+            dicts.append(dic)
+        else:
+            print(f'Аномалия кода тарифа {n}')
 
             
     return dicts
@@ -48,15 +60,29 @@ tarif_codes = parce_tarifs_naming(surgut_tarif[0])
 
 def parce_mat_names(farifs, zmat):
     for tarif in farifs:
-        for zmat in zmat_list:
-            _z, _type, _tonns, _len, _num = 'Z', [], zmat[6], zmat[5], zmat[1]
-            if 
-            _type = 
-            tarif.setdefault('numeber', _num)
+        for zmat in zmat_list[1:]:
+            _z, _tonns, _len, _num = 'Z', zmat[6], zmat[5], zmat[1]
+            if zmat[3] is not None:
+                zmat[3] = 'X'
+            if zmat[4] is not None:
+                zmat[4] = 'X'
+
+            if zmat[3]== 'X' and zmat[4] == 'X':
+                _type = ('CL', 'ST')
+            elif zmat[3] == 'X':
+                _type = ('ST',)
+            elif zmat[4] == 'X':
+                _type = ('CL',)
+            tar_tonns = float(tarif['tonns'])
+            tar_len = float(tarif['len'])
+            if float(_tonns) == tar_tonns and float(_len) == tar_len:
+                set_tarif_types = set(tarif['type'])
+                set_zmat_types = set(_type)
+                if set_tarif_types == set_zmat_types:
+                    tarif.setdefault('numeber', _num)
 
 tarif_types = {
     'LG': 'Логистика',
-    'CL': 'Сборные',
     'ST': 'Манипулятор',
     'GT': 'Общие условия',
     'CL': 'Сборные',
