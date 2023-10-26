@@ -5,6 +5,7 @@ import csv
 
 fot_tarif_name = 'samara_tarif.xlsx'
 zmat_list_name = 'ZMAT_LIST.xlsx'
+zfortest_name = 'ZFORTEST.xlsx'
 
 def read_xslx(file):
     csv_data = list()
@@ -21,7 +22,7 @@ def parce_tarifs_naming(arrs):
     raw = arrs[4:]
     codes = []
     for name in raw:
-        name = name.split('[')[1]
+        name = name.split('[')[1].replace(',','.')
         s = name.find(']')
         if s == -1:
             print(f'ошибка парсинга кода тарифа {name}')
@@ -39,7 +40,7 @@ def parce_tarifs_naming(arrs):
                 'len': n[4].replace('M','').replace('М','')
             }
             dicts.append(dic)
-        if len(n) == 6:
+        elif len(n) == 6:
             dic = {
                 'z': n[0],
                 'fot': n[1],
@@ -57,19 +58,18 @@ def parce_tarifs_naming(arrs):
 
 zmat_list = read_xslx(zmat_list_name)
 fot_tarif = read_xslx(fot_tarif_name)
-zfortest = read_xslx('ZFORTEST.xlsx')
+zfortest = read_xslx(zfortest_name)
 tarif_codes = parce_tarifs_naming(fot_tarif[0])
 
-def parce_mat_names(farifs, zmat):
+def parce_mat_names(tarifs, zmat):
     tarif_with_number = []
-    for tarif in farifs:
+    for tarif in tarifs:
         for zmat in zmat_list[1:]:
-            _tonns, _len, _num = zmat[6], zmat[5], zmat[1]
+            _type, _tonns, _len, _num = ('GT',), zmat[6], zmat[5], zmat[1]
             if zmat[3] is not None:
                 zmat[3] = 'X'
             if zmat[4] is not None:
                 zmat[4] = 'X'
-
             if zmat[3]== 'X' and zmat[4] == 'X':
                 _type = ('CL', 'ST')
             elif zmat[3] == 'X':
@@ -78,23 +78,47 @@ def parce_mat_names(farifs, zmat):
                 _type = ('CL',)
             tar_tonns = float(tarif['tonns'])
             tar_len = float(tarif['len'])
+
+            # костыль для 13.5м 20тонн
+            if tar_tonns == 20 and tar_len == 13.5:
+                tar_len = 12.0
+
             if float(_tonns) == tar_tonns and float(_len) == tar_len:
-                set_tarif_types = set(tarif['type'])
+                tarif_types_clear = list(tarif['type'])
+
+                # не учитываем ПЦС, ВРФ, Логистику
+                while 'SM' in tarif_types_clear:
+                    tarif_types_clear.remove('SM')
+                while 'LG' in tarif_types_clear:
+                    tarif_types_clear.remove('LG')
+                while 'PS' in tarif_types_clear:
+                    tarif_types_clear.remove('PS')
+                if not len(tarif_types_clear):
+                    tarif_types_clear =['GT']
+
+                set_tarif_types = set(tarif_types_clear)
                 set_zmat_types = set(_type)
                 if set_tarif_types == set_zmat_types:
                     tarif.setdefault('numeber', _num)
+                    break
         tarif_with_number.append(tarif)
     return tarif_with_number
 
 tarif_types = {
-    'LG': 'Логистика',
+    'LG': 'Логистика', # в таблице согласованных тарифов отсутствует
     'ST': 'Манипулятор',
     'GT': 'Общие условия',
     'CL': 'Сборные',
-    'PS': 'ПЦС',
-    'SM': 'ВРФ',
+    'PS': 'ПЦС', # в таблице согласованных тарифов отсутствует
+    'SM': 'ВРФ', # в таблице согласованных тарифов отсутствует
 }
 
 res = parce_mat_names(tarif_codes, zmat_list)
+# {'z': 'Z', 'fot': 'PO1033', 'type': ('GT',), 'tonns': '1.5', 'len': '6', 'numeber': 3000009096}
 
-print ('done')
+# получить название листа
+fot_tarif_xlsx = openpyxl.
+
+# получить скрытые листы
+for i in res:
+    print(i)
