@@ -3,6 +3,8 @@ import csv
 
 # ДОБАВЬ СЛУЧАЙ С ТИПОМ CL-ST
 
+fot_tarif_name = 'samara_tarif.xlsx'
+zmat_list_name = 'ZMAT_LIST.xlsx'
 
 def read_xslx(file):
     csv_data = list()
@@ -53,15 +55,16 @@ def parce_tarifs_naming(arrs):
     return dicts
 
 
-zmat_list = read_xslx('ZMAT_LIST.xlsx')
-surgut_tarif = read_xslx('Surgut_tarif.xlsx')
+zmat_list = read_xslx(zmat_list_name)
+fot_tarif = read_xslx(fot_tarif_name)
 zfortest = read_xslx('ZFORTEST.xlsx')
-tarif_codes = parce_tarifs_naming(surgut_tarif[0])
+tarif_codes = parce_tarifs_naming(fot_tarif[0])
 
 def parce_mat_names(farifs, zmat):
+    tarif_with_number = []
     for tarif in farifs:
         for zmat in zmat_list[1:]:
-            _z, _tonns, _len, _num = 'Z', zmat[6], zmat[5], zmat[1]
+            _tonns, _len, _num = zmat[6], zmat[5], zmat[1]
             if zmat[3] is not None:
                 zmat[3] = 'X'
             if zmat[4] is not None:
@@ -80,6 +83,8 @@ def parce_mat_names(farifs, zmat):
                 set_zmat_types = set(_type)
                 if set_tarif_types == set_zmat_types:
                     tarif.setdefault('numeber', _num)
+        tarif_with_number.append(tarif)
+    return tarif_with_number
 
 tarif_types = {
     'LG': 'Логистика',
