@@ -18,39 +18,54 @@ def read_xslx(file):
     return csv_data
 
 def parce_tarifs_naming(arrs):
-    # ДОБАВЬ СЛУЧАЙ С ТИПОМ CL-ST
-    raw = arrs[4:]
-    codes = []
-    for name in raw:
-        name = name.split('[')[1].replace(',','.')
-        s = name.find(']')
-        if s == -1:
-            print(f'ошибка парсинга кода тарифа {name}')
-        codes.append(name[:s])
+    flag_names = False
     dicts = []
-    for n in codes:
-        n = n.upper()
-        n = n.split('-')
-        if len(n) == 5:
-            dic = {
-                'z': n[0],
-                'fot': n[1],
-                'type': (n[2],),
-                'tonns': n[3].replace('Т','').replace('T',''),
-                'len': n[4].replace('M','').replace('М','')
-            }
-            dicts.append(dic)
-        elif len(n) == 6:
-            dic = {
-                'z': n[0],
-                'fot': n[1],
-                'type': (n[2],n[3]),
-                'tonns': n[4].replace('Т','').replace('T',''),
-                'len': n[5].replace('M','').replace('М','')
-            }
-            dicts.append(dic)
+    for raw in arrs:
+        if not flag_names:
+            raw = raw[4:]
+            codes = []
+            for name in raw:
+                name = name.split('[')[1].replace(',','.')
+                s = name.find(']')
+                if s == -1:
+                    print(f'ошибка парсинга кода тарифа {name}')
+                codes.append(name[:s])
+            for n in codes:
+                n = n.upper()
+                n = n.split('-')
+                if len(n) == 5:
+                    dic = {
+                        'z': n[0],
+                        'fot': n[1],
+                        'type': (n[2],),
+                        'tonns': n[3].replace('Т','').replace('T',''),
+                        'len': n[4].replace('M','').replace('М',''),
+                        'prices': dict()
+                    }
+                    dicts.append(dic)
+                elif len(n) == 6:
+                    dic = {
+                        'z': n[0],
+                        'fot': n[1],
+                        'type': (n[2],n[3]),
+                        'tonns': n[4].replace('Т','').replace('T',''),
+                        'len': n[5].replace('M','').replace('М','')
+                    }
+                    dicts.append(dic)
+                else:
+                    print(f'Аномалия кода тарифа {n}')
+            flag_names = True
         else:
-            print(f'Аномалия кода тарифа {n}')
+            counter = 4
+            for _dict in dicts:
+                x = raw[counter]
+                if x is None:
+                    counter += 1
+                    continue
+                _dict['prices'].setdefault(raw[0], dict())
+                pr = x
+                _dict['prices'][raw[0]].setdefault(raw[2], pr)
+                counter += 1
 
             
     return dicts
@@ -59,7 +74,7 @@ def parce_tarifs_naming(arrs):
 zmat_list = read_xslx(zmat_list_name)
 fot_tarif = read_xslx(fot_tarif_name)
 zfortest = read_xslx(zfortest_name)
-tarif_codes = parce_tarifs_naming(fot_tarif[0])
+tarif_codes = parce_tarifs_naming(fot_tarif)
 
 def parce_mat_names(tarifs, zmat):
     tarif_with_number = []
@@ -117,7 +132,7 @@ res = parce_mat_names(tarif_codes, zmat_list)
 # {'z': 'Z', 'fot': 'PO1033', 'type': ('GT',), 'tonns': '1.5', 'len': '6', 'numeber': 3000009096}
 
 # получить название листа
-fot_tarif_xlsx = openpyxl.
+# fot_tarif_xlsx = openpyxl.
 
 # получить скрытые листы
 for i in res:
