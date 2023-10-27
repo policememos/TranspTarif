@@ -128,12 +128,46 @@ tarif_types = {
     'SM': 'ВРФ', # в таблице согласованных тарифов отсутствует
 }
 
-res = parce_mat_names(tarif_codes, zmat_list)
+mapped_tarifs = parce_mat_names(tarif_codes, zmat_list)
 # {'z': 'Z', 'fot': 'PO1033', 'type': ('GT',), 'tonns': '1.5', 'len': '6', 'numeber': 3000009096}
 
-# получить название листа
-# fot_tarif_xlsx = openpyxl.
 
-# получить скрытые листы
-for i in res:
-    print(i)
+zspk_all_xlsx = openpyxl.load_workbook('ZSPK_ALL_unprotected.xlsx')
+
+# скопировали листы экселя
+sheets = []
+for sheet in zspk_all_xlsx:
+    sheets.append(sheet)
+
+first_sheet = sheets[0]
+last_row = first_sheet.dimensions.split(':')[1][1:]
+
+def fill_first_sheet(sheet):
+    for tarif in mapped_tarifs:
+        line_counter = last_row
+        a_col = ('ZR11', 'ZW91')
+        b_col = ('73', '*')
+        c_col = tarif['numeber']
+        f_col = tarif['fot']
+        g_col = tarif['tonns']+'T'
+        h_col = tarif['len']+'M'
+        if 'ST' in tarif['type']:
+            i_col = 'X'
+        if 'CL' in tarif['type']:
+            j_col = 'X'
+
+        for start_mpl, end_mpl in tarif['prices'].items():
+            if isinstance(end_mpl, dict):
+                for _end_mpl, _pr in end_mpl.items():
+                    d_col = start_mpl
+                    e_col = _end_mpl
+                    k_col = _pr
+                    sheet.cell(row=line_counter, column=1, value=1)
+
+            print('')
+
+fill_first_sheet(first_sheet)
+
+# добавляем строки
+# first_sheet.cell(row=4, column=2, value=10)
+print(last_row)
