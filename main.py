@@ -162,7 +162,21 @@ def fill_first_sheet(sheet):
                     d_col = start_mpl
                     e_col = _end_mpl
                     k_col = _pr
-                    sheet.cell(row=line_counter, column=1, value=1)
+                    for i in a_col:
+                        sheet.cell(row=line_counter, column=1, value=i)
+                        if i == 'ZR11':
+                            sheet.cell(row=line_counter, column=2, value=b_col[0])
+                        else:
+                            sheet.cell(row=line_counter, column=2, value=b_col[1])
+                        sheet.cell(row=line_counter, column=3, value=c_col)
+                        sheet.cell(row=line_counter, column=4, value=d_col)
+                        sheet.cell(row=line_counter, column=5, value=e_col)
+                        sheet.cell(row=line_counter, column=6, value=f_col)
+                        sheet.cell(row=line_counter, column=7, value=g_col)
+                        sheet.cell(row=line_counter, column=8, value=h_col)
+                        sheet.cell(row=line_counter, column=9, value=i_col)
+                        sheet.cell(row=line_counter, column=10, value=j_col)
+                        sheet.cell(row=line_counter, column=11, value=k_col)
 
             print('')
 
