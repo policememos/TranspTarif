@@ -80,17 +80,17 @@ def parce_mat_names(tarifs, zmat):
     tarif_with_number = []
     for tarif in tarifs:
         for zmat in zmat_list[1:]:
-            _type, _tonns, _len, _num = ('GT',), zmat[6], zmat[5], zmat[1]
+            _type, _tonns, _len, _num = ['GT'], zmat[6], zmat[5], zmat[1]
             if zmat[3] is not None:
                 zmat[3] = 'X'
             if zmat[4] is not None:
                 zmat[4] = 'X'
             if zmat[3]== 'X' and zmat[4] == 'X':
-                _type = ('CL', 'ST')
+                _type = ['CL', 'ST']
             elif zmat[3] == 'X':
-                _type = ('ST',)
+                _type = ['ST']
             elif zmat[4] == 'X':
-                _type = ('CL',)
+                _type = ['CL']
             tar_tonns = float(tarif['tonns'])
             tar_len = float(tarif['len'])
 
@@ -134,7 +134,7 @@ def fill_first_sheet(sheet_my):
         j_col = 'X' if 'CL' in tarif['type'] else ''
         if not tarif.get('numeber', False):
             ttp = "-".join(tarif['type'])
-            print(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}')
+            print(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}\n---> Нет подходящего материала в zmat_list\n')
             continue
         c_col = tarif['numeber']
 
