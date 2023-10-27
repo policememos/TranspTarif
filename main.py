@@ -76,11 +76,15 @@ def parce_tarifs_naming(arrs):
             
     return dicts
 
-def parce_mat_names(tarifs, zmat):
+def parce_mat_names(tarifs, zmat, skipping):
     tarif_with_number = []
     for tarif in tarifs:
+        if skipping:
+            if any(lambda x: 1 for x in ['SM','PS','LG'] if x in tarif['type']):
+                print(f"Скипаем тариф {tarif['z']}-{tarif['fot']}-{''.join(tarif['type'])}-{tarif['tonns']}T-{tarif['len']}M\nОн Врф/Пцс/Логистика\nПараметр skipping=1\n")
+                continue
         for zmat in zmat_list[1:]:
-            _type, _tonns, _len, _num = ['GT'], zmat[6], zmat[5], zmat[1]
+            _type, _tonns, _len, _num = ['GT'], float(zmat[6]), float(zmat[5]), zmat[1]
             if zmat[3] is not None:
                 zmat[3] = 'X'
             if zmat[4] is not None:
@@ -97,8 +101,9 @@ def parce_mat_names(tarifs, zmat):
             # костыль для 13.5м 20тонн
             if tar_tonns == 20 and tar_len == 13.5:
                 tar_len = 12.0
+                tarif['len'] = '12'
 
-            if float(_tonns) == tar_tonns and float(_len) == tar_len:
+            if _tonns == tar_tonns and _len == tar_len:
                 tarif_types_clear = list(tarif['type'])
 
                 # не учитываем ПЦС, ВРФ, Логистику
@@ -212,8 +217,11 @@ fot_tarif = read_xslx(fot_tarif_name)
 zfortest = read_xslx(zfortest_name)
 tarif_codes = parce_tarifs_naming(fot_tarif)
 
-mapped_tarifs = parce_mat_names(tarif_codes, zmat_list)
+mapped_tarifs = parce_mat_names(tarif_codes, zmat_list, skipping=True)
 # {'z': 'Z', 'fot': 'PO1033', 'type': ('GT',), 'tonns': '1.5', 'len': '6', 'numeber': 3000009096}
+
+for tar in mapped_tarifs:
+    print(f"{tar['z']}-{tar['fot']}-{''.join(tar['type'])}-{tar['tonns']}T-{tar['len']}M {tar.get('numeber', '')}")
 
 zspk_all_xlsx = openpyxl.load_workbook('ZSPK_ALL_unprotected.xlsx')
 first_sheet = zspk_all_xlsx.active
