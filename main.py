@@ -38,6 +38,7 @@ def parce_tarifs_naming(arrs):
                 codes.append(name[:s])
             for n in codes:
                 n = n.upper()
+                tar_name = n
                 n = n.split('-')
                 if len(n) == 5:
                     dic = {
@@ -46,6 +47,7 @@ def parce_tarifs_naming(arrs):
                         'type': (n[2],),
                         'tonns': n[3].replace('Т','').replace('T',''),
                         'len': n[4].replace('M','').replace('М',''),
+                        'tar_name': tar_name,
                         'prices': dict()
                     }
                     dicts.append(dic)
@@ -98,10 +100,120 @@ def parce_mat_names(tarifs, zmat, skipping):
             tar_tonns = float(tarif['tonns'])
             tar_len = float(tarif['len'])
 
-            # костыль для 13.5м 20тонн
+            # костыль для мэппинга 13.5м 20тонн
             if tar_tonns == 20 and tar_len == 13.5:
                 tar_len = 12.0
-                tarif['len'] = '12'
+                tarif['len'] = '12' # в тарифе
+
+            # Автодоставка сборная Манипулятор 3.5Т 6м
+            # Автодоставка  Манипулятор 3.5Т 6м
+            if tar_tonns in (0.5,1.5,1.0,2.0,2.5,3.0,3.5)  and tar_len == 6.0:
+                tar_tonns = 3.5
+                tarif['tonns'] = '3.5'
+            if tar_tonns in (0.5,1,2,2.5)  and tar_len == 6.2:
+                tar_tonns = 3.5
+                tarif['tonns'] = '3.5'
+                tar_len = 6.0
+                tarif['len'] = '6'
+            if tar_tonns == 1.5  and tar_len == 6.4:
+                tar_tonns = 3.5
+                tarif['tonns'] = '3.5'
+                tar_len = 6.0
+                tarif['len'] = '6'
+
+            # Автодоставка  Манипулятор 5Т 6м
+            # Автодоставка сборная Манипулятор 5Т 6м
+            if tar_tonns == 4.0 and tar_len == 6.0:
+                tar_tonns = 5.0
+                tarif['tonns'] = '5.0'
+                tar_len = 6.0
+                tarif['len'] = '6'
+
+            # Автодоставка  Манипулятор 9Т 6,7м
+            # Автодоставка сборная Манипулятор 9Т 6,7м
+            # Автодоставка сборная Манипулятор 9Т 6,7м
+            if tar_tonns == 5.0 and tar_len in (5.4,5.5,5.8,6.0,6.2,6.4):
+                tar_tonns = 9.0
+                tarif['tonns'] = '9.0'
+                tar_len = 6.7
+                tarif['len'] = '6.7'
+            if tar_tonns == 4.0 and tar_len in (6.0,6.4):
+                tar_tonns = 9.0
+                tarif['tonns'] = '9.0'
+                tar_len = 6.7
+                tarif['len'] = '6.7'
+            if tar_tonns == 9.0 and tar_len == 6.7:
+                tar_tonns = 9.0
+                tarif['tonns'] = '9.0'
+                tar_len = 6.7
+                tarif['len'] = '6.7'
+
+            # Автодоставка  Манипулятор 10Т 8м
+            if tar_tonns == 10.0 and tar_len in (6.4,6.0):
+                tar_tonns = 10.0
+                tarif['tonns'] = '10.0'
+                tar_len = 8.0
+                tarif['len'] = '8.0'
+            if tar_tonns == 6.0 and tar_len in (6.0, 7.0):
+                tar_tonns = 10.0
+                tarif['tonns'] = '10.0'
+                tar_len = 8.0
+                tarif['len'] = '8.0'
+            if tar_tonns == 8.0 and tar_len == 6.0:
+                tar_tonns = 10.0
+                tarif['tonns'] = '10.0'
+                tar_len = 8.0
+                tarif['len'] = '8.0'
+
+            # Автодоставка  Манипулятор 20Т 12м
+            if tar_tonns == 10.0 and tar_len in (6.4,8.2,8.4,8.5,8.0):
+                tar_tonns = 20.0
+                tarif['tonns'] = '20.0'
+                tar_len = 12.0
+                tarif['len'] = '12.0'
+            if tar_tonns == 15.0 and tar_len == 9.6:
+                tar_tonns = 20.0
+                tarif['tonns'] = '20.0'
+                tar_len = 12.0
+                tarif['len'] = '12.0'
+            if tar_tonns == 20.0 and tar_len == 12.0:
+                tar_tonns = 20.0
+                tarif['tonns'] = '20.0'
+                tar_len = 12.0
+                tarif['len'] = '12.0'
+
+            # Автодоставка сборная 1.5Т 4м
+            if tar_tonns == 0.5 and tar_len in (4.0,8.2,6.2):
+                tar_tonns = 1.5
+                tarif['tonns'] = '1.5'
+                tar_len = 4.0
+                tarif['len'] = '4.0'
+            if tar_tonns in (0.7,1.5) and tar_len == 4.0:
+                tar_tonns = 1.5
+                tarif['tonns'] = '1.5'
+                tar_len = 4.0
+                tarif['len'] = '4.0'
+            if tar_tonns == 1.0 and tar_len == 8.2:
+                tar_tonns = 1.5
+                tarif['tonns'] = '1.5'
+                tar_len = 4.0
+                tarif['len'] = '4.0'
+
+            # Автодоставка  сборная 1.5Т 6м
+            if tar_tonns in (0.5,1.5,1) and tar_len == 6.0:
+                tar_tonns = 1.5
+                tarif['tonns'] = '1.5'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+            if tar_tonns == 1 and tar_len == 6.2:
+                tar_tonns = 1.5
+                tarif['tonns'] = '1.5'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+
+
+
+
 
             if _tonns == tar_tonns and _len == tar_len:
                 tarif_types_clear = list(tarif['type'])
