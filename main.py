@@ -322,6 +322,25 @@ def parce_mat_names(tarifs, zmat, skipping):
                 tar_len = 8.2
                 tarif['len'] = '8.2'
 
+            # Автодоставка  25Т 12м
+            if tar_tonns == 25.0 and tar_len == 13.5:
+                tar_tonns = 25.0
+                tarif['tonns'] = '25.0'
+                tar_len = 12.0
+                tarif['len'] = '12.0'
+
+            # АВТОДОСТАВКА 40Т 12М
+            if tar_tonns in (27.0,28.0,30.0) and tar_len == 12.0:
+                tar_tonns = 40.0
+                tarif['tonns'] = '40.0'
+                tar_len = 12.0
+                tarif['len'] = '12.0'
+            if tar_tonns == 30.0 and tar_len == 13.5:
+                tar_tonns = 40.0
+                tarif['tonns'] = '40.0'
+                tar_len = 12.0
+                tarif['len'] = '12.0'
+
 
 
             if _tonns == tar_tonns and _len == tar_len:
