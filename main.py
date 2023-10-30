@@ -101,9 +101,10 @@ def parce_mat_names(tarifs, zmat, skipping):
             tar_len = float(tarif['len'])
 
             # костыль для мэппинга 13.5м 20тонн
-            if tar_tonns == 20 and tar_len == 13.5:
+            if tar_tonns == 20 and tar_len in (13.5,13.0,11.7):
                 tar_len = 12.0
                 tarif['len'] = '12' # в тарифе
+
 
             # Автодоставка сборная Манипулятор 3.5Т 6м
             # Автодоставка  Манипулятор 3.5Т 6м
@@ -211,7 +212,115 @@ def parce_mat_names(tarifs, zmat, skipping):
                 tar_len = 6.0
                 tarif['len'] = '6.0'
 
+            # Автодоставка сборная 2Т 6м
+            if tar_tonns == 2.0 and tar_len in (6.0,8.2,6.5,6.2):
+                tar_tonns = 2.0
+                tarif['tonns'] = '2.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
 
+            # Автодоставка сборная 3Т 6м
+            if tar_tonns == 3.0 and tar_len in (6.0,8.2):
+                tar_tonns = 3.0
+                tarif['tonns'] = '3.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+
+            # Автодоставка сборная 5Т 6м
+            if tar_tonns == 4.0 and tar_len in (6.0,8.2):
+                tar_tonns = 5.0
+                tarif['tonns'] = '5.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+            if tar_tonns == 5.0 and tar_len in (6.0,6.2,8.2):
+                tar_tonns = 5.0
+                tarif['tonns'] = '5.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+
+            # Автодоставка сборная 10Т 6м
+            if tar_tonns in (6.0,10.0) and tar_len == 13.2:
+                tar_tonns = 10.0
+                tarif['tonns'] = '10.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+            if tar_tonns == 7.0 and tar_len == 6.0:
+                tar_tonns = 10.0
+                tarif['tonns'] = '10.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+
+            # Автодоставка  1.5Т 4м
+            if tar_tonns in (1.5,1.0) and tar_len == 6.0:
+                tar_tonns = 1.5
+                tarif['tonns'] = '1.5'
+                tar_len = 4.0
+                tarif['len'] = '4.0'
+            if tar_tonns == 1.5 and tar_len == 5.0:
+                tar_tonns = 1.5
+                tarif['tonns'] = '1.5'
+                tar_len = 4.0
+                tarif['len'] = '4.0'
+
+            # Автодоставка  2Т 6м
+            if tar_tonns == 2.0 and tar_len in (4.2,6.0,12.0):
+                tar_tonns = 2.0
+                tarif['tonns'] = '2.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+
+            # Автодоставка  3Т 6м
+            if tar_tonns in (3.0,2.5) and tar_len == 6.0:
+                tar_tonns = 3.0
+                tarif['tonns'] = '3.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+            if tar_tonns == 3.0 and tar_len in (3.0,5.0):
+                tar_tonns = 3.0
+                tarif['tonns'] = '3.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+
+            # Автодоставка  5Т 6м
+            if tar_tonns == 4.0 and tar_len == 6.0:
+                tar_tonns = 5.0
+                tarif['tonns'] = '5.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+            if tar_tonns == 4.5 and tar_len == 6.0:
+                tar_tonns = 5.0
+                tarif['tonns'] = '5.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+            if tar_tonns == 5.0 and tar_len in (5.4,5.5,5.0,6.0,6.5):
+                tar_tonns = 5.0
+                tarif['tonns'] = '5.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+
+            # Автодоставка  10Т 6м
+            if tar_tonns == 10.0 and tar_len in (6.2,6.4,6.0,7.0):
+                tar_tonns = 10.0
+                tarif['tonns'] = '10.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+            if tar_tonns in (7.0,8.0,6.0) and tar_len == 6.0:
+                tar_tonns = 10.0
+                tarif['tonns'] = '10.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+            if tar_tonns == 6.0 and tar_len == 7.0:
+                tar_tonns = 10.0
+                tarif['tonns'] = '10.0'
+                tar_len = 6.0
+                tarif['len'] = '6.0'
+
+            # Автодоставка  15Т 8.2м
+            if tar_tonns == 15.0 and tar_len in (7.0,8.2):
+                tar_tonns = 15.0
+                tarif['tonns'] = '15.0'
+                tar_len = 8.2
+                tarif['len'] = '8.2'
 
 
 
