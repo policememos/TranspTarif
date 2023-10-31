@@ -205,15 +205,16 @@ def parce_mat_names(tarifs, zmat, skipping):
                     print(f'Подмена тарифа {tarif["tar_name"]}- Манипулятор 9Т 6,7м ')
 
             # Автодоставка сборная Манипулятор 9Т 6,7м
-            if tr_type_cheker == 'CLST':
-                if tar_tonns == 9.0 and tar_len in (6.7,):
-                    tar_tonns = 9.0
-                    tarif['tonns'] = '9.0'
-                    tar_len = 6.7
-                    tarif['len'] = '6.7'
+            # if tr_type_cheker == 'CLST':
+            #     if tar_tonns == 9.0 and tar_len in (6.7,):
+            #         tar_tonns = 9.0
+            #         tarif['tonns'] = '9.0'
+            #         tar_len = 6.7
+            #         tarif['len'] = '6.7'
                     # print(f'Подмена тарифа {tarif["tar_name"]} \n')
 
             # Автодоставка  Манипулятор 10Т 8м
+            # Z-PO1106-ST-10T-6.4M будет исправлен, сейчас попадает в манип 20Т 12м
             if tr_type_cheker == 'ST':
                 if tar_tonns == 6.0 and tar_len in (7.0,6.0):
                     tar_tonns = 10.0
@@ -235,44 +236,47 @@ def parce_mat_names(tarifs, zmat, skipping):
                     print(f'Подмена тарифа {tarif["tar_name"]} - Манипулятор 10Т 8м')
 
             # Автодоставка  Манипулятор 20Т 12м
-            if tar_tonns == 10.0 and tar_len in (6.4,8.2,8.4,8.5,8.0):
-                tar_tonns = 20.0
-                tarif['tonns'] = '20.0'
-                tar_len = 12.0
-                tarif['len'] = '12.0'
-                # print(f'Подмена тарифа {tarif["tar_name"]} \n')
-            if tar_tonns == 15.0 and tar_len == 9.6:
-                tar_tonns = 20.0
-                tarif['tonns'] = '20.0'
-                tar_len = 12.0
-                tarif['len'] = '12.0'
-                # print(f'Подмена тарифа {tarif["tar_name"]} \n')
-            if tar_tonns == 20.0 and tar_len == 12.0:
-                tar_tonns = 20.0
-                tarif['tonns'] = '20.0'
-                tar_len = 12.0
-                tarif['len'] = '12.0'
-                # print(f'Подмена тарифа {tarif["tar_name"]} \n')
+            if tr_type_cheker == 'ST':
+                if tar_tonns == 10.0 and tar_len in (8.0,8.2,8.4,8.5):
+                    tar_tonns = 20.0
+                    tarif['tonns'] = '20.0'
+                    tar_len = 12.0
+                    tarif['len'] = '12.0'
+                    print(f'Подмена тарифа {tarif["tar_name"]} - Манипулятор 20Т 12м')
+                if tar_tonns == 15.0 and tar_len == 9.6:
+                    tar_tonns = 20.0
+                    tarif['tonns'] = '20.0'
+                    tar_len = 12.0
+                    tarif['len'] = '12.0'
+                    print(f'Подмена тарифа {tarif["tar_name"]} - Манипулятор 20Т 12м')
+
+
+
+
+
+
+
 
             # Автодоставка сборная 1.5Т 4м
-            if tar_tonns == 0.5 and tar_len in (4.0,8.2,6.2):
-                tar_tonns = 1.5
-                tarif['tonns'] = '1.5'
-                tar_len = 4.0
-                tarif['len'] = '4.0'
-                # print(f'Подмена тарифа {tarif["tar_name"]} \n')
-            if tar_tonns in (0.7,1.5) and tar_len == 4.0:
-                tar_tonns = 1.5
-                tarif['tonns'] = '1.5'
-                tar_len = 4.0
-                tarif['len'] = '4.0'
-                # print(f'Подмена тарифа {tarif["tar_name"]} \n')
-            if tar_tonns == 1.0 and tar_len == 8.2:
-                tar_tonns = 1.5
-                tarif['tonns'] = '1.5'
-                tar_len = 4.0
-                tarif['len'] = '4.0'
-                # print(f'Подмена тарифа {tarif["tar_name"]} \n')
+            if tr_type_cheker == 'CL':
+                if tar_tonns in (0.5,0.7) and tar_len == 4.0:
+                    tar_tonns = 1.5
+                    tarif['tonns'] = '1.5'
+                    tar_len = 4.0
+                    tarif['len'] = '4.0'
+                    print(f'Подмена тарифа {tarif["tar_name"]} - сборная 1.5Т 4м')
+                if tar_tonns in (0.5,) and tar_len == 6.2:
+                    tar_tonns = 1.5
+                    tarif['tonns'] = '1.5'
+                    tar_len = 4.0
+                    tarif['len'] = '4.0'
+                    print(f'Подмена тарифа {tarif["tar_name"]} - сборная 1.5Т 4м')
+                if tar_tonns == 1.0 and tar_len == 8.2:
+                    tar_tonns = 1.5
+                    tarif['tonns'] = '1.5'
+                    tar_len = 4.0
+                    tarif['len'] = '4.0'
+                    # print(f'Подмена тарифа {tarif["tar_name"]} \n')
 
             # Автодоставка  сборная 1.5Т 6м
             if tar_tonns in (0.5,1.5,1) and tar_len == 6.0:
