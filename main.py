@@ -4,6 +4,7 @@ import openpyxl
 LOG_FILE = []
 fot_tarif_name = 'tarif.xlsx'
 zmat_list_name = 'ZMAT_LIST.xlsx'
+zspk_all_name = 'ZSPK_ALL.xlsx'
 
 def save_log():
     with open('log.txt', 'w', encoding='utf-8') as logfil:
@@ -271,7 +272,7 @@ zmat_list = read_xslx(zmat_list_name)
 fot_tarif = read_xslx(fot_tarif_name)
 tarif_codes = parce_tarifs_naming(fot_tarif)
 mapped_tarifs = parce_mat_names(tarif_codes, zmat_list, skipping=True)
-zspk_all_xlsx = openpyxl.load_workbook('ZSPK_ALL_unprotected.xlsx')
+zspk_all_xlsx = openpyxl.load_workbook(zspk_all_name)
 first_sheet = zspk_all_xlsx.active
 last_row = first_sheet.dimensions.split(':')[1][1:]
 fill_first_sheet(first_sheet)
