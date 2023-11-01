@@ -1,6 +1,6 @@
 import openpyxl
 
-
+LOG_FILE = []
 fot_tarif_name = 'samara_tarif.xlsx'
 zmat_list_name = 'ZMAT_LIST.xlsx'
 zfortest_name = 'ZFORTEST.xlsx'
@@ -12,6 +12,11 @@ tarif_types = {
     'PS': 'ПЦС', # в таблице согласованных тарифов отсутствует
     'SM': 'ВРФ', # в таблице согласованных тарифов отсутствует
 }
+def save_log():
+    with open('log.txt', 'w', encoding='utf-8') as logfil:
+        for line in LOG_FILE:
+            logfil.write(line)
+            logfil.write('\n')
 
 def read_xslx(file):
     csv_data = list()
@@ -34,6 +39,7 @@ def parce_tarifs_naming(arrs):
                 name = name.split('[')[1].replace(',','.')
                 s = name.find(']')
                 if s == -1:
+                    LOG_FILE.append(f'ошибка парсинга кода тарифа {name}')
                     print(f'ошибка парсинга кода тарифа {name}')
                 codes.append(name[:s])
             for n in codes:
@@ -63,6 +69,7 @@ def parce_tarifs_naming(arrs):
                     }
                     dicts.append(dic)
                 else:
+                    LOG_FILE.append(f'Аномалия кода тарифа {n}')
                     print(f'Аномалия кода тарифа {n}')
             flag_names = True
         else:
@@ -154,12 +161,14 @@ def zm_finder(tarif, zmat_data, type_cheker):
 
     sorted_dict = sorted(fitting_zmats, key = lambda x: (x['tonns'], x['len']))
 
+    LOG_FILE.append(f'\n{tarif["tar_name"]}\nВид: {type_cheker}\nВес: {tar_tonns}\nДлина: {tar_len}')
     print(f'\n{tarif["tar_name"]}\nВид: {type_cheker}\nВес: {tar_tonns}\nДлина: {tar_len}')
     find_fl = False
     for zm in sorted_dict:
         # проверка аномального тарифа
         if tar_tonns == 22.0 and tar_len == 13.5:
             if zm['tonns'] == 22.0 and zm['len'] == 13.5:
+                LOG_FILE.append(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]}')
                 print(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]}')
                 find_fl = True
                 return zm['num']
@@ -169,6 +178,7 @@ def zm_finder(tarif, zmat_data, type_cheker):
 
         if tar_tonns <= zm['tonns']:
             if tar_len <= zm['len']:
+                LOG_FILE.append(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]}')
                 print(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]}')
                 find_fl = True
                 return zm['num']
@@ -183,13 +193,15 @@ def parce_mat_names(tarifs, zmat, skipping):
     for tarif in tarifs:
         if skipping:
             if any(lambda x: 1 for x in ['SM','PS','LG'] if x in tarif['type']):
+                LOG_FILE.append(f"\nСкипаем тариф {tarif['z']}-{tarif['fot']}-{''.join(tarif['type'])}-{tarif['tonns']}T-{tarif['len']}M\nОн Врф/Пцс/Логистика\nПараметр skipping=1\n")
                 print(f"\nСкипаем тариф {tarif['z']}-{tarif['fot']}-{''.join(tarif['type'])}-{tarif['tonns']}T-{tarif['len']}M\nОн Врф/Пцс/Логистика\nПараметр skipping=1\n")
                 continue
             
         tr_type_cheker = check_type(tarif['type'])
         mat_num = zm_finder(tarif, zmat_data, tr_type_cheker)
         if not mat_num:
-            print('Не нашлось материала автодоставки')
+            LOG_FILE.append(f'Не нашлось материала автодоставки')
+            print(f'Не нашлось материала автодоставки')
 
         tarif.setdefault('numeber', mat_num)
         tarif_with_number.append(tarif)
@@ -210,6 +222,7 @@ def fill_first_sheet(sheet_my):
         j_col = 'X' if 'CL' in tarif['type'] else ''
         if not tarif.get('numeber', False):
             ttp = "-".join(tarif['type'])
+            LOG_FILE.append(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}\n---> Нет подходящего материала в zmat_list\n')
             print(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}\n---> Нет подходящего материала в zmat_list\n')
             continue
         c_col = tarif['numeber']
@@ -252,6 +265,7 @@ def backup_fill_first_sheet(sheet_my):
         j_col = 'X' if 'CL' in tarif['type'] else ''
         if not tarif.get('numeber', False):
             ttp = "-".join(tarif['type'])
+            LOG_FILE.append(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}')
             print(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}')
             continue
         c_col = tarif['numeber']
@@ -291,11 +305,10 @@ tarif_codes = parce_tarifs_naming(fot_tarif)
 mapped_tarifs = parce_mat_names(tarif_codes, zmat_list, skipping=True)
 # {'z': 'Z', 'fot': 'PO1033', 'type': ('GT',), 'tonns': '1.5', 'len': '6', 'numeber': 3000009096}
 
-# for tar in mapped_tarifs:
-#     print(f"{tar['z']}-{tar['fot']}-{''.join(tar['type'])}-{tar['tonns']}T-{tar['len']}M {tar.get('numeber', '')}")
 
 zspk_all_xlsx = openpyxl.load_workbook('ZSPK_ALL_unprotected.xlsx')
 first_sheet = zspk_all_xlsx.active
 last_row = first_sheet.dimensions.split(':')[1][1:]
 fill_first_sheet(first_sheet)
 zspk_all_xlsx.save('result.xlsx')
+save_log()
