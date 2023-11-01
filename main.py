@@ -1,17 +1,10 @@
 import openpyxl
 
+
 LOG_FILE = []
-fot_tarif_name = 'samara_tarif.xlsx'
+fot_tarif_name = 'tarif.xlsx'
 zmat_list_name = 'ZMAT_LIST.xlsx'
-zfortest_name = 'ZFORTEST.xlsx'
-tarif_types = {
-    'LG': 'Логистика', # в таблице согласованных тарифов отсутствует
-    'ST': 'Манипулятор',
-    'GT': 'Общие условия',
-    'CL': 'Сборные',
-    'PS': 'ПЦС', # в таблице согласованных тарифов отсутствует
-    'SM': 'ВРФ', # в таблице согласованных тарифов отсутствует
-}
+
 def save_log():
     with open('log.txt', 'w', encoding='utf-8') as logfil:
         for line in LOG_FILE:
@@ -121,20 +114,6 @@ def parce_zmat_list(zmat):
     return data
 
 def zm_finder(tarif, zmat_data, type_cheker):
-            # змат
-            # {'type': ['CL', 'ST'],
-            #  'tonns': 3.5,
-            #  'len': 6.0,
-            #  'num': 3000005470}
-
-            # тариф
-            # {'z': 'Z',
-            #  'fot': 'PO1033',
-            #  'type': ('GT',)     ST-манип, CL-сборная
-            #  'tonns': '1.5',
-            #  'len': '6',
-            #  'tar_name': 'Z-PO1033-GT-1.5T-6M',
-            #  'prices': {'TZRU63-0001': {...},}
     fitting_zmats = []
     tar_tonns = float(tarif['tonns'])
     tar_len = float(tarif['len'])
@@ -185,8 +164,6 @@ def zm_finder(tarif, zmat_data, type_cheker):
     if not find_fl:
         return find_fl
 
-
-
 def parce_mat_names(tarifs, zmat, skipping):
     tarif_with_number = []
     zmat_data = parce_zmat_list(zmat)
@@ -226,7 +203,6 @@ def fill_first_sheet(sheet_my):
             print(f'\nОшибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}\n---> Нет подходящего материала в zmat_list\n')
             continue
         c_col = tarif['numeber']
-
         for start_mpl, end_mpl in tarif['prices'].items():
             if isinstance(end_mpl, dict):
                 for _end_mpl, _pr in end_mpl.items():
@@ -235,12 +211,10 @@ def fill_first_sheet(sheet_my):
                     k_col = _pr
                     for i in a_col:
                         sheet_my.cell(row=line_counter, column=1, value=i)
-
                         if i == 'ZR11':
                             sheet_my.cell(row=line_counter, column=2, value=b_col[0])
                         else:
                             sheet_my.cell(row=line_counter, column=2, value=b_col[1])
-
                         sheet_my.cell(row=line_counter, column=3, value=c_col)
                         sheet_my.cell(row=line_counter, column=4, value=d_col)
                         sheet_my.cell(row=line_counter, column=5, value=e_col)
@@ -269,7 +243,6 @@ def backup_fill_first_sheet(sheet_my):
             print(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}')
             continue
         c_col = tarif['numeber']
-
         for start_mpl, end_mpl in tarif['prices'].items():
             if isinstance(end_mpl, dict):
                 for _end_mpl, _pr in end_mpl.items():
@@ -278,12 +251,10 @@ def backup_fill_first_sheet(sheet_my):
                     k_col = _pr
                     for i in a_col:
                         ed_sheet.cell(row=line_counter, column=1, value=i)
-
                         if i == 'ZR11':
                             ed_sheet.cell(row=line_counter, column=2, value=b_col[0])
                         else:
                             ed_sheet.cell(row=line_counter, column=2, value=b_col[1])
-
                         ed_sheet.cell(row=line_counter, column=3, value=c_col)
                         ed_sheet.cell(row=line_counter, column=4, value=d_col)
                         ed_sheet.cell(row=line_counter, column=5, value=e_col)
@@ -294,18 +265,12 @@ def backup_fill_first_sheet(sheet_my):
                         ed_sheet.cell(row=line_counter, column=10, value=j_col)
                         ed_sheet.cell(row=line_counter, column=11, value=k_col)
                         line_counter += 1
-
     return ed_sheet
 
 zmat_list = read_xslx(zmat_list_name)
 fot_tarif = read_xslx(fot_tarif_name)
-# zfortest = read_xslx(zfortest_name)
 tarif_codes = parce_tarifs_naming(fot_tarif)
-
 mapped_tarifs = parce_mat_names(tarif_codes, zmat_list, skipping=True)
-# {'z': 'Z', 'fot': 'PO1033', 'type': ('GT',), 'tonns': '1.5', 'len': '6', 'numeber': 3000009096}
-
-
 zspk_all_xlsx = openpyxl.load_workbook('ZSPK_ALL_unprotected.xlsx')
 first_sheet = zspk_all_xlsx.active
 last_row = first_sheet.dimensions.split(':')[1][1:]
