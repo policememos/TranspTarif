@@ -40,10 +40,21 @@ def parce_tarifs_naming(arrs):
                 n = n.upper()
                 tar_name = n
                 n = n.split('-')
+                tmp = n[1][:2]
+                if tmp == 'PO':
+                    tmp = n[1]
+                elif tmp == 'РО':
+                    tmp = n[1]
+                elif tmp == 'PО':
+                    tmp = n[1]
+                elif tmp == 'РO':
+                    tmp = n[1]
+                else:
+                    tmp = 'PO'+n[1]
                 if len(n) == 5:
                     dic = {
                         'z': n[0],
-                        'fot': n[1],
+                        'fot': tmp,
                         'type': (n[2],),
                         'tonns': n[3].replace('Т','').replace('T',''),
                         'len': n[4].replace('M','').replace('М',''),
@@ -54,7 +65,7 @@ def parce_tarifs_naming(arrs):
                 elif len(n) == 6:
                     dic = {
                         'z': n[0],
-                        'fot': n[1],
+                        'fot': tmp,
                         'type': (n[2],n[3]),
                         'tonns': n[4].replace('Т','').replace('T',''),
                         'len': n[5].replace('M','').replace('М',''),
@@ -185,7 +196,7 @@ def parce_mat_names(tarifs, zmat, skipping):
         tarif_with_number.append(tarif)
     return tarif_with_number
 
-def fill_first_sheet(sheet_my):
+def fill_first_sheet(sheet_my, last_row):
     line_flag = False
     if not line_flag:
         line_counter = int(last_row)+1
@@ -275,6 +286,6 @@ mapped_tarifs = parce_mat_names(tarif_codes, zmat_list, skipping=True)
 zspk_all_xlsx = openpyxl.load_workbook(zspk_all_name)
 first_sheet = zspk_all_xlsx.active
 last_row = first_sheet.dimensions.split(':')[1][1:]
-fill_first_sheet(first_sheet)
+fill_first_sheet(first_sheet, last_row)
 zspk_all_xlsx.save('result.xlsx')
 save_log()
