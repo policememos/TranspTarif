@@ -81,15 +81,15 @@ def parce_tarifs_naming(arrs):
     return dicts
 
 def check_type(_type):
-    if _type == 'CL':
-        return 'CL'
-    if _type == 'ST':
-        return 'ST'
     if 'CL' in _type:
         if 'ST' in _type:
             return 'CLST'
+    if 'CL' in _type:
+        return 'CL'
+    if 'ST' in _type:
+        return 'ST'
     else:
-        return _type
+        return 'GT'
 
 def parce_zmat_list(zmat):
     data = []
@@ -113,17 +113,7 @@ def parce_zmat_list(zmat):
         })
     return data
 
-
-
-def parce_mat_names(tarifs, zmat, skipping):
-    tarif_with_number = []
-    zmat_data = parce_zmat_list(zmat)
-    for tarif in tarifs:
-        if skipping:
-            if any(lambda x: 1 for x in ['SM','PS','LG'] if x in tarif['type']):
-                print(f"Скипаем тариф {tarif['z']}-{tarif['fot']}-{''.join(tarif['type'])}-{tarif['tonns']}T-{tarif['len']}M\nОн Врф/Пцс/Логистика\nПараметр skipping=1\n")
-                continue
-            
+def zm_finder(tarif, zmat_data, type_cheker):
             # змат
             # {'type': ['CL', 'ST'],
             #  'tonns': 3.5,
@@ -133,135 +123,75 @@ def parce_mat_names(tarifs, zmat, skipping):
             # тариф
             # {'z': 'Z',
             #  'fot': 'PO1033',
-            #  'type': ('GT',), ST-манип, CL-сборная
+            #  'type': ('GT',)     ST-манип, CL-сборная
             #  'tonns': '1.5',
             #  'len': '6',
             #  'tar_name': 'Z-PO1033-GT-1.5T-6M',
             #  'prices': {'TZRU63-0001': {...},}
-            tar_tonns = float(tarif['tonns'])
-            tar_len = float(tarif['len'])
-            tr_type_cheker = check_type(tarif['type'])
+    fitting_zmats = []
+    tar_tonns = float(tarif['tonns'])
+    tar_len = float(tarif['len'])
+    if type_cheker == 'CLST':
+        for zm in zmat_data:
+            if 'CL' in zm['type']:
+                if 'ST' in zm['type']:
+                    fitting_zmats.append(zm)
+    if type_cheker == 'CL':
+        for zm in zmat_data:
+            if len(zm['type']) == 1:
+                if 'CL' in zm['type']:
+                    fitting_zmats.append(zm)
+    if type_cheker == 'ST':
+        for zm in zmat_data:
+            if len(zm['type']) == 1:
+                if 'ST' in zm['type']:
+                    fitting_zmats.append(zm)
+    if type_cheker == 'GT':
+        for zm in zmat_data:
+            if len(zm['type']) == 1:
+                if 'GT' in zm['type']:
+                    fitting_zmats.append(zm)
 
-            # костыль ручной проверки был тут
+    sorted_dict = sorted(fitting_zmats, key = lambda x: (x['tonns'], x['len']))
+
+    print(f'\n{tarif["tar_name"]}\nВид: {type_cheker}\nВес: {tar_tonns}\nДлина: {tar_len}')
+    find_fl = False
+    for zm in sorted_dict:
+        # проверка аномального тарифа
+        if tar_tonns == 22.0 and tar_len == 13.5:
+            if zm['tonns'] == 22.0 and zm['len'] == 13.5:
+                print(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]}')
+                find_fl = True
+                return zm['num']
+
+        if tar_len in (13.0, 13.5):
+            tar_len = 12.0
+
+        if tar_tonns <= zm['tonns']:
+            if tar_len <= zm['len']:
+                print(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]}')
+                find_fl = True
+                return zm['num']
+    if not find_fl:
+        return find_fl
+
+
+
+def parce_mat_names(tarifs, zmat, skipping):
+    tarif_with_number = []
+    zmat_data = parce_zmat_list(zmat)
+    for tarif in tarifs:
+        if skipping:
+            if any(lambda x: 1 for x in ['SM','PS','LG'] if x in tarif['type']):
+                print(f"\nСкипаем тариф {tarif['z']}-{tarif['fot']}-{''.join(tarif['type'])}-{tarif['tonns']}T-{tarif['len']}M\nОн Врф/Пцс/Логистика\nПараметр skipping=1\n")
+                continue
             
+        tr_type_cheker = check_type(tarif['type'])
+        mat_num = zm_finder(tarif, zmat_data, tr_type_cheker)
+        if not mat_num:
+            print('Не нашлось материала автодоставки')
 
-            # Автодоставка сборная Манипулятор 3.5Т 6м
-            # Автодоставка сборная Манипулятор 5Т 6м
-            # Автодоставка сборная Манипулятор 9Т 6,7м
-            # Автодоставка сборная Манипулятор 10Т 6м
-            # Автодоставка сборная Манипулятор 10Т 8м
-            # Автодоставка сборная Манипулятор 20Т 12м
-            if tr_type_cheker == 'CLST':
-                print(f'\n{tarif["tar_name"]}\nВид: {tr_type_cheker}\nВес: {tar_tonns}\nДлина: {tar_len}')
-                if tar_tonns <= 3.5:
-                    if tar_len != 6.0:
-                        if tar_len <= 6.4:
-                            tar_tonns = 3.5
-                            tarif['tonns'] = '3.5'
-                            tar_len = 6.0
-                            tarif['len'] = '6.0'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная Манипулятор 3.5Т 6м')
-
-                elif 3.5 < tar_tonns <= 5:
-                    if tar_len <= 6.4:
-                        if tar_len != 6.0:
-                            tar_tonns = 5.0
-                            tarif['tonns'] = '5.0'
-                            tar_len = 6.0
-                            tarif['len'] = '6.0'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная Манипулятор 5Т 6м')
-                
-                elif 5.0 < tar_tonns <= 9.0:
-                    if tar_len <= 6.7:
-                        if tar_len != 6.7:
-                            tar_tonns = 9.0
-                            tarif['tonns'] = '9.0'
-                            tar_len = 6.7
-                            tarif['len'] = '6.7'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная Манипулятор 9Т 6,7м')
-
-                elif 9.0 < tar_tonns <= 10.0:
-                    if tar_len <= 6.0:
-                        if tar_len != 6.0:
-                            tar_tonns = 10.0
-                            tarif['tonns'] = '10.0'
-                            tar_len = 6.0
-                            tarif['len'] = '6.0'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная Манипулятор 10Т 6м')
-                    if 6.0 < tar_len <= 8.0:
-                        if tar_len != 8.0:
-                            tar_tonns = 10.0
-                            tarif['tonns'] = '10.0'
-                            tar_len = 8.0
-                            tarif['len'] = '8.0'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная Манипулятор 10Т 8м')
-
-                elif 10.0 < tar_tonns <= 20.0:
-                    if tar_len <= 13.5:
-                        if tar_len != 12.0:
-                            tar_tonns = 20.0
-                            tarif['tonns'] = '20.0'
-                            tar_len = 12.0
-                            tarif['len'] = '12.0'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная Манипулятор 20Т 12м')
-                else:
-                    print('Подмен не найдено')
-            
-            # Автодоставка сборная 1.5Т 4м
-            # Автодоставка  сборная 1.5Т 6м
-            # Автодоставка сборная 2Т 6м
-            # Автодоставка сборная 3Т 6м
-            # Автодоставка сборная 5Т 6м
-            # Автодоставка сборная 10Т 6м
-            # Автодоставка сборная 15Т 8.2м
-            # Автодоставка сборная 20Т 12м
-            # Автодоставка сборная 25Т 12м
-            if tr_type_cheker == 'CL':
-                print(f'\n{tarif["tar_name"]}\nВид: {tr_type_cheker}\nВес: {tar_tonns}\nДлина: {tar_len}')
-                if tar_tonns <= 1.5:
-                    if tar_len <= 4.0:
-                        if tar_len != 4.0:
-                            tar_tonns = 1.5
-                            tarif['tonns'] = '1.5'
-                            tar_len = 4.0
-                            tarif['len'] = '4.0'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная 1.5Т 4м')
-                    if 4.0 < tar_len <= 6.0:
-                        if tar_len != 4.0:
-                            tar_tonns = 1.5
-                            tarif['tonns'] = '1.5'
-                            tar_len = 6.0
-                            tarif['len'] = '6.0'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная 1.5Т 6м')
-
-                elif 1.5 < tar_tonns <= 2.0:
-                    # if tar_len <= :
-                        if tar_len != 4.0:
-                            tar_tonns = 1.5
-                            tarif['tonns'] = '1.5'
-                            tar_len = 6.0
-                            tarif['len'] = '6.0'
-                            print(f'Подмена тарифа {tarif["tar_name"]} - Автодоставка сборная 1.5Т 6м')
-
-# раскомменть
-            # if _tonns == tar_tonns and _len == tar_len:
-            #     tarif_types_clear = list(tarif['type'])
-
-            #     # не учитываем ПЦС, ВРФ, Логистику
-            #     while 'SM' in tarif_types_clear:
-            #         tarif_types_clear.remove('SM')
-            #     while 'LG' in tarif_types_clear:
-            #         tarif_types_clear.remove('LG')
-            #     while 'PS' in tarif_types_clear:
-            #         tarif_types_clear.remove('PS')
-            #     if not len(tarif_types_clear):
-            #         tarif_types_clear =['GT']
-
-            #     set_tarif_types = set(tarif_types_clear)
-            #     set_zmat_types = set(_type)
-            #     if set_tarif_types == set_zmat_types:
-            #         tarif.setdefault('numeber', _num)
-            #         break
+        tarif.setdefault('numeber', mat_num)
         tarif_with_number.append(tarif)
     return tarif_with_number
 
@@ -355,14 +285,14 @@ def backup_fill_first_sheet(sheet_my):
 
 zmat_list = read_xslx(zmat_list_name)
 fot_tarif = read_xslx(fot_tarif_name)
-zfortest = read_xslx(zfortest_name)
+# zfortest = read_xslx(zfortest_name)
 tarif_codes = parce_tarifs_naming(fot_tarif)
 
 mapped_tarifs = parce_mat_names(tarif_codes, zmat_list, skipping=True)
 # {'z': 'Z', 'fot': 'PO1033', 'type': ('GT',), 'tonns': '1.5', 'len': '6', 'numeber': 3000009096}
 
-for tar in mapped_tarifs:
-    print(f"{tar['z']}-{tar['fot']}-{''.join(tar['type'])}-{tar['tonns']}T-{tar['len']}M {tar.get('numeber', '')}")
+# for tar in mapped_tarifs:
+#     print(f"{tar['z']}-{tar['fot']}-{''.join(tar['type'])}-{tar['tonns']}T-{tar['len']}M {tar.get('numeber', '')}")
 
 zspk_all_xlsx = openpyxl.load_workbook('ZSPK_ALL_unprotected.xlsx')
 first_sheet = zspk_all_xlsx.active
