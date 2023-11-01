@@ -200,8 +200,8 @@ def parce_mat_names(tarifs, zmat, skipping):
         tr_type_cheker = check_type(tarif['type'])
         mat_num = zm_finder(tarif, zmat_data, tr_type_cheker)
         if not mat_num:
-            LOG_FILE.append(f'Не нашлось материала автодоставки')
-            print(f'Не нашлось материала автодоставки')
+            LOG_FILE.append('Не нашлось материала автодоставки')
+            print('Не нашлось материала автодоставки')
 
         tarif.setdefault('numeber', mat_num)
         tarif_with_number.append(tarif)
@@ -222,8 +222,8 @@ def fill_first_sheet(sheet_my):
         j_col = 'X' if 'CL' in tarif['type'] else ''
         if not tarif.get('numeber', False):
             ttp = "-".join(tarif['type'])
-            LOG_FILE.append(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}\n---> Нет подходящего материала в zmat_list\n')
-            print(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}\n---> Нет подходящего материала в zmat_list\n')
+            LOG_FILE.append(f'\nОшибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}\n---> Нет подходящего материала в zmat_list\n')
+            print(f'\nОшибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}\n---> Нет подходящего материала в zmat_list\n')
             continue
         c_col = tarif['numeber']
 
