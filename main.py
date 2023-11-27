@@ -211,8 +211,8 @@ def fill_first_sheet(sheet_my, last_row):
         a_col = ('ZR11', 'ZW91')
         b_col = ('73', '*')
         f_col = tarif['fot']
-        g_col = tarif['tonns']+'Т'
-        h_col = tarif['len']+'М'
+        g_col = str(tarif['tonns'])+'Т'
+        h_col = str(tarif['len'])+'М'
         i_col = 'X' if 'ST' in tarif['type'] else ''
         j_col = 'X' if 'CL' in tarif['type'] else ''
         if not tarif.get('numeber', False):
