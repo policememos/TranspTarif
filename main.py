@@ -162,7 +162,7 @@ def zm_finder(tarif, zmat_data, type_cheker):
                 LOG_FILE.append(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]}')
                 print(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]}')
                 find_fl = True
-                return zm['num']
+                return zm['num'], zm['len']
 
         if tar_len in (13.0, 13.5):
             tar_len = 12.0
@@ -172,9 +172,9 @@ def zm_finder(tarif, zmat_data, type_cheker):
                 LOG_FILE.append(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]}')
                 print(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]}')
                 find_fl = True
-                return zm['num']
+                return zm['num'], zm['len']
     if not find_fl:
-        return find_fl
+        return find_fl, False
 
 def parce_mat_names(tarifs, zmat, skipping):
     tarif_with_number = []
@@ -187,12 +187,18 @@ def parce_mat_names(tarifs, zmat, skipping):
                 continue
             
         tr_type_cheker = check_type(tarif['type'])
-        mat_num = zm_finder(tarif, zmat_data, tr_type_cheker)
+        mat_num, mat_len = zm_finder(tarif, zmat_data, tr_type_cheker)
         if not mat_num:
             LOG_FILE.append('Не нашлось материала автодоставки')
             print('Не нашлось материала автодоставки')
+            continue
 
         tarif.setdefault('numeber', mat_num)
+        try:
+            int_mat_len = int(mat_len)
+        except:
+            int_mat_len = mat_len
+        tarif['len'] = int_mat_len
         tarif_with_number.append(tarif)
     return tarif_with_number
 
@@ -205,8 +211,8 @@ def fill_first_sheet(sheet_my, last_row):
         a_col = ('ZR11', 'ZW91')
         b_col = ('73', '*')
         f_col = tarif['fot']
-        g_col = tarif['tonns']+'T'
-        h_col = tarif['len']+'M'
+        g_col = tarif['tonns']+'Т'
+        h_col = tarif['len']+'М'
         i_col = 'X' if 'ST' in tarif['type'] else ''
         j_col = 'X' if 'CL' in tarif['type'] else ''
         if not tarif.get('numeber', False):
