@@ -227,10 +227,10 @@ def parce_mat_names(tarifs, zmat, skipping):
         tarif_with_number.append(tarif)
     return tarif_with_number
 
-def fill_first_sheet(sheet_my, last_row):
+def fill_first_sheet(sheet_my, _last_row):
     line_flag = False
     if not line_flag:
-        line_counter = int(last_row)+1
+        line_counter = int(_last_row)+1
         line_flag = True
     for tarif in mapped_tarifs:
         a_col = ('ZR11', 'ZW91')
