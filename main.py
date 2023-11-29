@@ -106,7 +106,7 @@ def check_type(_type):
 def parce_zmat_list(zmat):
     data = []
     for zmat in zmat_list[1:]:
-        _type, _tonns, _len, _num = ['GT'], float(zmat[6]), float(zmat[5]), zmat[1]
+        _type, _tonns, _len, _num, _name = ['GT'], float(zmat[6]), float(zmat[5]), zmat[1], zmat[2]
         if zmat[3] is not None:
             zmat[3] = 'X'
         if zmat[4] is not None:
@@ -121,7 +121,8 @@ def parce_zmat_list(zmat):
             'type': _type,
             'tonns': _tonns,
             'len': _len,
-            'num': _num
+            'num': _num,
+            'naming': _name
         })
     return data
 
@@ -159,8 +160,8 @@ def zm_finder(tarif, zmat_data, type_cheker):
         # проверка аномального тарифа
         if tar_tonns == 22.0 and tar_len == 13.5:
             if zm['tonns'] == 22.0 and zm['len'] == 13.5:
-                LOG_FILE.append(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]}')
-                print(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]}')
+                LOG_FILE.append(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]} {zm["naming"]}')
+                print(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]} {zm["naming"]}')
                 find_fl = True
                 return zm['num'], zm['len']
 
@@ -169,8 +170,8 @@ def zm_finder(tarif, zmat_data, type_cheker):
 
         if tar_tonns <= zm['tonns']:
             if tar_len <= zm['len']:
-                LOG_FILE.append(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]}')
-                print(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]}')
+                LOG_FILE.append(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]} {zm["naming"]}')
+                print(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]} {zm["naming"]}')
                 find_fl = True
                 return zm['num'], zm['len']
     if not find_fl:
