@@ -269,46 +269,6 @@ def fill_first_sheet(sheet_my, last_row):
                         sheet_my.cell(row=line_counter, column=11, value=k_col)
                         line_counter += 1
 
-def backup_fill_first_sheet(sheet_my):
-    ed_sheet = sheet_my
-    for tarif in mapped_tarifs:
-        line_counter = int(last_row)+1
-        a_col = ('ZR11', 'ZW91')
-        b_col = ('73', '*')
-        f_col = tarif['fot']
-        g_col = tarif['tonns']+'T'
-        h_col = tarif['len']+'M'
-        i_col = 'X' if 'ST' in tarif['type'] else ''
-        j_col = 'X' if 'CL' in tarif['type'] else ''
-        if not tarif.get('numeber', False):
-            ttp = "-".join(tarif['type'])
-            LOG_FILE.append(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}')
-            print(f'Ошибка при создании новго экселя с тарифом Z-{f_col}-{ttp}-{g_col}-{h_col}')
-            continue
-        c_col = tarif['numeber']
-        for start_mpl, end_mpl in tarif['prices'].items():
-            if isinstance(end_mpl, dict):
-                for _end_mpl, _pr in end_mpl.items():
-                    d_col = start_mpl
-                    e_col = _end_mpl
-                    k_col = _pr
-                    for i in a_col:
-                        ed_sheet.cell(row=line_counter, column=1, value=i)
-                        if i == 'ZR11':
-                            ed_sheet.cell(row=line_counter, column=2, value=b_col[0])
-                        else:
-                            ed_sheet.cell(row=line_counter, column=2, value=b_col[1])
-                        ed_sheet.cell(row=line_counter, column=3, value=c_col)
-                        ed_sheet.cell(row=line_counter, column=4, value=d_col)
-                        ed_sheet.cell(row=line_counter, column=5, value=e_col)
-                        ed_sheet.cell(row=line_counter, column=6, value=f_col)
-                        ed_sheet.cell(row=line_counter, column=7, value=g_col)
-                        ed_sheet.cell(row=line_counter, column=8, value=h_col)
-                        ed_sheet.cell(row=line_counter, column=9, value=i_col)
-                        ed_sheet.cell(row=line_counter, column=10, value=j_col)
-                        ed_sheet.cell(row=line_counter, column=11, value=k_col)
-                        line_counter += 1
-    return ed_sheet
 
 zmat_list = read_xslx(zmat_list_name)
 fot_tarif = read_xslx(fot_tarif_name)
