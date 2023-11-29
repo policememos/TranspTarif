@@ -1,5 +1,5 @@
 *.exe
-# *.xlsx
+*.xlsx
 *.txt
 Нижневартовск/
 output/
