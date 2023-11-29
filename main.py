@@ -35,6 +35,8 @@ def parce_tarifs_naming(arrs):
                 if s == -1:
                     LOG_FILE.append(f'ошибка парсинга кода тарифа {name}')
                     print(f'ошибка парсинга кода тарифа {name}')
+                    save_log()
+                    break
                 codes.append(name[:s])
             for n in codes:
                 n = n.upper()
@@ -51,31 +53,45 @@ def parce_tarifs_naming(arrs):
                     tmp = n[1]
                 else:
                     tmp = 'PO'+n[1]
-                if len(n) == 5:
-                    dic = {
-                        'z': n[0],
-                        'fot': tmp,
-                        'type': (n[2],),
-                        'tonns': n[3].replace('Т','').replace('T',''),
-                        'len': n[4].replace('M','').replace('М',''),
-                        'tar_name': tar_name,
-                        'prices': dict()
-                    }
-                    dicts.append(dic)
-                elif len(n) == 6:
-                    dic = {
-                        'z': n[0],
-                        'fot': tmp,
-                        'type': (n[2],n[3]),
-                        'tonns': n[4].replace('Т','').replace('T',''),
-                        'len': n[5].replace('M','').replace('М',''),
-                        'tar_name': tar_name,
-                        'prices': dict()
-                    }
-                    dicts.append(dic)
-                else:
+                par_count = n[-1].count('.')
+                par_count1 = n[-1].count('M')
+                par_count2 = n[-2].count('.')
+                par_count3 = n[-2].count('T')
+                sumar = par_count+par_count1+par_count2+par_count3
+                if sumar>4:
                     LOG_FILE.append(f'Аномалия кода тарифа {n}')
                     print(f'Аномалия кода тарифа {n}')
+                    save_log()
+                    exit()
+
+                else:
+                    if len(n) == 5:
+                        dic = {
+                            'z': n[0],
+                            'fot': tmp,
+                            'type': (n[2],),
+                            'tonns': n[3].replace('Т','').replace('T',''),
+                            'len': n[4].replace('M','').replace('М',''),
+                            'tar_name': tar_name,
+                            'prices': dict()
+                        }
+                        dicts.append(dic)
+                    elif len(n) == 6:
+                        dic = {
+                            'z': n[0],
+                            'fot': tmp,
+                            'type': (n[2],n[3]),
+                            'tonns': n[4].replace('Т','').replace('T',''),
+                            'len': n[5].replace('M','').replace('М',''),
+                            'tar_name': tar_name,
+                            'prices': dict()
+                        }
+                        dicts.append(dic)
+                    else:
+                        LOG_FILE.append(f'Аномалия кода тарифа {n}')
+                        print(f'Аномалия кода тарифа {n}')
+                        save_log()
+                        exit()
             flag_names = True
         else:
             counter = 4
