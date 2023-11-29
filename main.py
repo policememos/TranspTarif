@@ -163,7 +163,7 @@ def zm_finder(tarif, zmat_data, type_cheker):
                 LOG_FILE.append(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]} {zm["naming"]}')
                 print(f'Определён тариф {zm["type"]}{zm["tonns"]}T{zm["len"]}M---{zm["num"]} {zm["naming"]}')
                 find_fl = True
-                return zm['num'], zm['len']
+                return zm['num'], zm['len'], zm['tonns']
 
         if tar_len in (13.0, 13.5):
             tar_len = 12.0
@@ -173,7 +173,7 @@ def zm_finder(tarif, zmat_data, type_cheker):
                 LOG_FILE.append(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]} {zm["naming"]}')
                 print(f'Определён тариф {zm["type"]}-{zm["tonns"]}T-{zm["len"]}M---{zm["num"]} {zm["naming"]}')
                 find_fl = True
-                return zm['num'], zm['len']
+                return zm['num'], zm['len'], zm['tonns']
     if not find_fl:
         return find_fl, False
 
@@ -188,18 +188,26 @@ def parce_mat_names(tarifs, zmat, skipping):
                 continue
             
         tr_type_cheker = check_type(tarif['type'])
-        mat_num, mat_len = zm_finder(tarif, zmat_data, tr_type_cheker)
+        mat_num, mat_len, mat_tonn = zm_finder(tarif, zmat_data, tr_type_cheker)
         if not mat_num:
             LOG_FILE.append('Не нашлось материала автодоставки')
             print('Не нашлось материала автодоставки')
             continue
 
         tarif.setdefault('numeber', mat_num)
-        try:
-            int_mat_len = int(mat_len)
-        except:
-            int_mat_len = mat_len
+
+        int_mat_len = str(mat_len)
+        a, b = int_mat_len.split('.')
+        if b == '0':
+            int_mat_len = a
+        
+        int_mat_tonn = str(mat_tonn)
+        a, b = int_mat_tonn.split('.')
+        if b == '0':
+            int_mat_tonn = a
+
         tarif['len'] = int_mat_len
+        tarif['tonns'] = int_mat_tonn
         tarif_with_number.append(tarif)
     return tarif_with_number
 
